@@ -1,0 +1,35 @@
+networks:
+  mysql-network:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-server
+    restart: unless-stopped
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: azerty1234A*
+      TZ: Europe/Paris
+    ports:
+      - 3306:3306
+    volumes:
+      - "./docker/mysql/mysql.cnf:/etc/mysql/conf.d/custom.cnf:ro"
+      - "./docker/mysql/data:/var/lib/mysql"
+    networks:
+      - mysql-network
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - "8888:80"
+    tty: true
+    environment:
+      PMA_HOST: mysql
+      PMA_ARBITRARY: 1
+      PMA_PORT: 3306
+    networks:
+      - mysql-network
